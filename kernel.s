@@ -1,14 +1,6 @@
 [BITS 16]
 [ORG 0x1000]
 
-;===============TODO===============
-;   Criar uma funcao read_line para
-;   evitar repeticao de codigo nas
-;   funcoes .initial_read_loop e
-;   read_loop.
-;===================================
-
-
 _start:
     mov cx, 16
     mov di, name
@@ -19,37 +11,8 @@ _start:
     call print_string
 
     xor bx, bx
-.initial_read_loop:
-    mov ah, 0x00
-    int 0x16
-
-    cmp al, 0x0D
-    je .done
-    cmp al, 0x08
-    je .backspace
-
-    cmp bx, 15
-    jge .initial_read_loop
-
-    mov [name + bx], al
-    inc bx
-    call print_char
-    jmp .initial_read_loop
-
-.done:
-    mov byte [name + bx], 0
-    mov al, 0x0D
-    call print_char
-    mov al, 0x0A
-    call print_char
+    call read_line
     jmp main_loop
-
-.backspace:
-    test bx, bx
-    jz .initial_read_loop
-    dec bx
-    call print_backspace
-    jmp .initial_read_loop
 
 main_loop:
     mov si, name
@@ -63,36 +26,8 @@ main_loop:
     rep stosb
 
     xor bx, bx
-read_loop:
-    mov ah, 0x00
-    int 0x16
-    
-    cmp al, 0x0D
-    je .new_line
-    cmp al, 0x08
-    je .backspace
-    
-    cmp bx, 127
-    jge read_loop
-    
-    mov [input_buffer + bx], al
-    inc bx
-    call print_char
-    jmp read_loop
-
-.new_line:
-    mov al, 0x0D
-    call print_char
-    mov al, 0x0A
-    call print_char
+    call read_line
     jmp main_loop
-
-.backspace:
-    test bx, bx
-    jz read_loop
-    dec bx
-    call print_backspace
-    jmp read_loop
 
 print_backspace:
     mov al, 0x08
@@ -117,6 +52,49 @@ print_char:
     mov bh, 0
     int 0x10
     ret
+
+read_line:
+    mov ah, 0x00
+    int 0x16
+
+    cmp al, 0x0D
+
+    test di, name
+    jz .done_n
+    test di, input_buffer
+    jz .new_line
+
+    cmp al, 0x08
+    je .backspace
+
+    cmp bx, cx
+    jge read_line
+    
+    mov [di + bx], al
+    inc bx
+    call print_char
+    jmp read_line
+
+.done_n:
+    mov byte [di + bx], 0
+    mov al, 0x0D
+    call print_char
+    mov al, 0x0A
+    call print_char
+
+.new_line:
+    mov al, 0x0D
+    call print_char
+    mov al, 0x0A
+    call print_char
+
+.backspace:
+    test bx, bx
+    jz read_line
+
+    dec bx
+    call print_backspace
+    jmp read_line
 
 entry_msg db "Kernel Working! Please enter your name: ", 0
 name times 16 db 0
