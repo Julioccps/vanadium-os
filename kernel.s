@@ -2,7 +2,7 @@
 [ORG 0x1000]
 
 _start:
-    mov cx, 16
+    mov cx, 15
     mov di, name
     xor al, al
     rep stosb
@@ -20,7 +20,7 @@ main_loop:
     mov si, prompt
     call print_string
 
-    mov cx, 128
+    mov cx, 127
     mov di, input_buffer
     xor al, al
     rep stosb
