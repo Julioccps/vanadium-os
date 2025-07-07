@@ -73,7 +73,7 @@ new_line:
 print_backspace:
     mov al, 0x08
     call print_char
-    mov al, ' '
+    mov al, 0x20
     call print_char
     mov al, 0x08
     call print_char

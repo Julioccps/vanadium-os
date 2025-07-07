@@ -4,8 +4,10 @@
 _start:
     mov si, shell_msg
     call print_string
+    call new_line
     jmp $
 
+;   ========== FUNCTIONS ==========
 print_string:
     lodsb
     or al, al
@@ -22,6 +24,22 @@ print_char:
     int 0x10
     ret
 
-shell_msg db "Shell Working!", 0
+new_line:
+    mov al, 0x0D
+    call print_char
+    mov al, 0x0A
+    call print_char
+    ret
 
+backspace:
+    mov al, 0x08
+    call print_char
+    mov al, 0x20
+    call print_char
+    mov al, 0x08
+    call print_char
+    ret
+
+;   ========== DATA ==========
+shell_msg db "Shell Working!", 0
 times 512 - ($ - $$) db 0
