@@ -46,7 +46,7 @@ To run the operating system in the QEMU emulator, use the command:
 qemu-system-i386 -fda disk.img -nographics
 
 ```
-(Optional) Only if sdl support installed
+(Optional) Only if sdl support installed:
 ```bash
 qemu-system-i386 -fda disk.img -display sdl
 ```
