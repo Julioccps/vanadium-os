@@ -10,12 +10,22 @@ _start:
 
     mov bx, 0x1000
     mov ah, 0x02
-    mov al, 1
+    mov al, 2
     mov ch, 0
     mov cl, 2
     mov dh, 0
     int 0x13
     jc disk_error
+
+    mov bx, 0x2000
+    mov ah, 0x02
+    mov al, 1
+    mov ch, 0
+    mov cl, 5
+    mov dh, 0
+    int 0x13
+    jc disk_error
+
     jmp 0x0000:0x1000
 
 disk_error:
