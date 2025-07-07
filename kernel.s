@@ -27,7 +27,6 @@ main_loop:
     mov di, input_buffer
     call read_line
     
-    mov si, cmd_exec
     call parse_command
     jmp main_loop
 
@@ -104,7 +103,8 @@ parse_command:
     mov si, input_buffer
     mov di, cmd_exec
     call compare_string
-    je load_shell
+    test ax, 1
+    jz load_shell
 
     mov si, command_not_found
     call print_string
