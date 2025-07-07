@@ -1,4 +1,4 @@
-# Simple OS
+# Vanadium OS
 
 This is a personal project to learn the fundamental concepts of Operating System development, starting from 16-bit real mode.
 
