@@ -65,4 +65,4 @@ qemu-system-i386 -fda disk.img -display sdl
 
 During the development of this project, the following resources were of great help:
 
-- OSDev Wiki - An indispensable source of knowledge for OS development.
+- [OSDev Wiki](https://wiki.osdev.org/) - An indispensable source of knowledge for OS development.
