@@ -161,6 +161,10 @@ syscall_handler:
     je sys_open
     cmp ah, 0x04
     je sys_close
+    cmo ah, 0x05
+    je sys_fread
+    cmo ah, 0x06
+    je sys_fwrite
     iret
 sys_read:
     mov ah, 0x00
@@ -175,15 +179,62 @@ sys_exit:
     jmp main_loop
 
 sys_open:
-;   =========== TODO ===========
-;   Handle File with file system
-;   ============================
+    mov cx, MAX_OPEN_FILES
+    mov di, file_descriptor_table
+.fs_find:
+    cmp byte [di + FdInUseOffset], 0
+    je .found
+    add di, FD_STRUCT_SIZE
+    loop .fs_find
+    mov ax, -1
+    iret
+.found:
+;   Temporary code, Simulating a fix file
+    mov byte [di + FdInUseOffset], 1
+    mov dword [di + FdStartSector], 20 
+    mov dword [di + FdFileSize], 512   
+    mov byte [di + FdSeekPos], 0
+
+    mov ax, di
+    sub ax, file_descriptor_table
+    iret
 
 sys_close:
-;   ========== TODO ============
-;   Handle File with file system
-;   ============================
+    cmp bx, MAX_OPEN_FILES * FD_STRUCT_SIZE
+    jae .error
+    mov byte [file_descriptor_table + bx + FdInUseOffset], 0
+    xor ax, ax          
+    iret
+.error:
+    mov ax, -1
+    iret
 
+sys_fread:
+    cmp byte [file_descriptor_table + bx + FdInUseOffset], 1
+    jne .error
+;   Temporary Code, Simulating reading a file
+    push ds
+    mov ax, es
+    mov ds, ax
+    mov si, di
+
+    mov ah, 0x02        
+    mov al, 1           
+    mov ch, 0           
+    mov cl, [file_descriptor_table + bx + FdStartSector]
+    mov dh, 0           
+    int 0x13
+    pop ds
+    
+    mov ax, cx          
+    iret
+.error:
+    mov ax, -1
+    iret
+sys_fwrite:
+;   ========= TODO =========
+;       Use ah=0x03 BIOS
+;   ========================
 
 ;   ========= FILE SYSTEM =========
 fs_init:
