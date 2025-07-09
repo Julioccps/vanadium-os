@@ -161,9 +161,9 @@ syscall_handler:
     je sys_open
     cmp ah, 0x04
     je sys_close
-    cmo ah, 0x05
+    cmp ah, 0x05
     je sys_fread
-    cmo ah, 0x06
+    cmp ah, 0x06
     je sys_fwrite
     iret
 sys_read:
