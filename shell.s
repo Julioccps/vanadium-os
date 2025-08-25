@@ -115,8 +115,6 @@ parse_command:
     mov di, cmd_buffer
 .copy_command_loop:
     lodsb
-    ;cmp al, 0x20
-    ;je .command_copied
     cmp al, 0
     je .command_copied
     stosb
@@ -135,6 +133,18 @@ parse_command:
     call strcmp
     test ax, ax
     jz .show_help_help
+
+    mov di, cmd_help_clear
+    mov si, cmd_buffer
+    call strcmp
+    test ax, ax
+    jz .show_help_clear
+
+    mov di, cmd_help_exec
+    mov si, cmd_buffer
+    call strcmp
+    test ax, ax
+    jz .show_help_exec
 
     mov di, cmd_clear
     mov si, cmd_buffer
@@ -181,6 +191,18 @@ parse_command:
 
 .show_help_help:
     mov si, help_msg_help
+    call sys_write
+    call new_line
+    ret
+
+.show_help_clear:
+    mov si, help_msg_clear
+    call sys_write
+    call new_line
+    ret
+
+.show_help_exec:
+    mov si, help_msg_exec
     call sys_write
     call new_line
     ret
@@ -282,15 +304,19 @@ prompt db "> ", 0
 cmd_help db "help", 0
 cmd_clear db "clear", 0
 cmd_help_help db "help help", 0
+cmd_help_clear db "help clear", 0
+cmd_help_exec db "help exec", 0
 cmd_exec db "exec", 0
 exec_place_holder db "Exec is still not implemented", 0
 command_not_found db "Command not found", 0
-help_msg db "help -- Shows this message", 0x0D, 0x0A, "help <arg> -- shows a message for a specific command", 0x0D, 0x0A, "clear -- clears the screen", 0x0D, 0x0A, "exec -- executes a file", 0
+help_msg db "help -- Shows this message", 0x0D, 0x0A, "help <arg> -- shows a message for a specific command", 0x0D, 0x0A, "clear -- clears the screen", 0x0D, 0x0A, "exec <arg> -- executes a file *arg*", 0
 help_msg_help db "help -- shows a message stating all the commands avaiable", 0xD, 0x0A, "help <arg> -- shows a message for a specific command", 0
+help_msg_clear db "clear -- clears the screen", 0
+help_msg_exec db "exec <arg> -- executes a file *arg*", 0
 input_buffer times 128 db 0
 char_buffer db 0, 0 
 cmd_buffer times 64 db 0
 char_backspace db 0x08, 0
 char_space db ' ', 0
 
-times 1024 - ($ - $$) db 0
+times 2048 - ($ - $$) db 0

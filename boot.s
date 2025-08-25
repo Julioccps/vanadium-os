@@ -19,7 +19,7 @@ _start:
 
     mov bx, 0x2000
     mov ah, 0x02
-    mov al, 2
+    mov al, 4
     mov ch, 0
     mov cl, 5
     mov dh, 0
