@@ -27,9 +27,6 @@ main_loop:
     call sys_write
     call read_line
     call parse_command
-;   =========== TODO ==============
-;     Complete the command parser    
-;   ===============================
     jmp main_loop
 
 ;   ========== FUNCTIONS ==========
