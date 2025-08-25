@@ -112,65 +112,137 @@ print_backspace:
 
 parse_command:
     mov si, input_buffer
-    mov di, cmd_exec
-    call compare_string 
-    test ax, 1
+    mov di, cmd_buffer
+.copy_command_loop:
+    lodsb
+    ;cmp al, 0x20
+    ;je .command_copied
+    cmp al, 0
+    je .command_copied
+    stosb
+    jmp .copy_command_loop
+.command_copied:
+    mov byte [di], 0
 
     mov di, cmd_help
-    call compare_string 
-    test ax, 1
-    jz help
+    mov si, cmd_buffer
+    call strcmp
+    test ax, ax
+    jz .show_general_help
+    
+    mov di, cmd_help_help
+    mov si, cmd_buffer
+    call strcmp
+    test ax, ax
+    jz .show_help_help
 
     mov di, cmd_clear
-    call compare_string 
-    test ax, 1
-    jz clear
-    jmp cmd_not_found
+    mov si, cmd_buffer
+    call strcmp
+    test ax, ax
+    jz .do_clear
+    
+    mov di, cmd_exec
+    mov si, cmd_buffer
+    call strcmp
+    test ax, ax
+    jz .do_exec
 
-cmd_not_found:
     mov si, command_not_found
     call sys_write
     call new_line
     ret
+.do_help:
+    mov si, input_buffer
+    mov di, cmd_buffer
+    call strlen
+    add si, ax
+.skip_spaces:
+    lodsb
+    cmp byte [si], 0x20
+    je .skip_spaces 
+    cmp byte [si], 0
+   je .show_general_help
+.skip_next:
+    inc si
+    jmp .skip_spaces
 
-compare_string:
+
+.check_argument:
+    mov di, cmd_help
+    call strcmp_after_space
+    jz .show_help_help
+
+.show_general_help:
+    mov si, help_msg
+    call sys_write
+    call new_line
+    ret
+
+.show_help_help:
+    mov si, help_msg_help
+    call sys_write
+    call new_line
+    ret
+
+.do_clear:
+    call clear_screen
+    ret
+
+.do_exec:
+    mov si, exec_place_holder
+    call sys_write
+    call new_line
+    ret
+
+strcmp:
+    push si
+    push di
 .loop:
     mov al, byte [si]
     mov bl, byte [di]
     cmp al, bl
-    jne .equal
-    cmp al, 0
-    je .not_equal
-    cmp al, 0x20  
-    je .space   
+    jne .not_equal
+    test al, al
+    jz .equal
     inc si
     inc di
     jmp .loop
 .equal:
-    mov ax, 1
-    ret
-.not_equal:
     xor ax, ax
+    jmp .done
+.not_equal:
+    mov ax, 1
+.done:
+    pop di
+    pop si
     ret
-.space:
-    cmp di, cmd_exec
-;   =========== TODO ===========
-;   Use file System to look for
-;   the file and execute it or
-;   Return a error message, and 
-;   =========== DATA ===========
-    cmp di, cmd_help
-    jmp help ;  Por enquanto
-;   =========== TODO ===========
-;   Set arguments for the command
-;   and put them on the si, to
-;   compare with existing ones
-;   ============================
-    cmp di, cmd_clear
-    je clear
-clear:
-    call clear_screen
+
+strcmp_after_space:
+    push si
+    push di
+.loop:
+    mov al, byte [si]
+    mov bl, byte [di]
+    cmp bl, 0
+    je .equal
+    cmp al, bl
+    jne .not_equal
+    test al, al
+    jz .equal
+    inc si
+    inc di
+    jmp .loop
+.equal:
+    xor ax, ax
+    jmp .done
+.not_equal:
+    mov ax, 1
+.done:
+    pop di
+    pop si
     ret
+
 clear_screen:
     mov ah, 0x06
     mov al, 0
@@ -189,6 +261,18 @@ help:
     call new_line
     ret
 
+strlen:
+    push si
+    xor ax, ax
+.loop:
+    lodsb
+    cmp al, 0
+    je .done
+    inc ax
+    jmp .loop
+.done:
+    pop si
+    ret
 
 ;   =========== DATA ==========
 welcome_msg db "Welcome, ", 0
@@ -197,12 +281,15 @@ nl db 0x0D, 0x0A, 0
 prompt db "> ", 0
 cmd_help db "help", 0
 cmd_clear db "clear", 0
+cmd_help_help db "help help", 0
 cmd_exec db "exec", 0
+exec_place_holder db "Exec is still not implemented", 0
 command_not_found db "Command not found", 0
-help_msg db "help -- Shows this message", 0x0D, 0x0A, "clear -- clears the screen", 0x0D, 0x0A, "exec -- executes a file", 0
+help_msg db "help -- Shows this message", 0x0D, 0x0A, "help <arg> -- shows a message for a specific command", 0x0D, 0x0A, "clear -- clears the screen", 0x0D, 0x0A, "exec -- executes a file", 0
+help_msg_help db "help -- shows a message stating all the commands avaiable", 0xD, 0x0A, "help <arg> -- shows a message for a specific command", 0
 input_buffer times 128 db 0
 char_buffer db 0, 0 
-
+cmd_buffer times 64 db 0
 char_backspace db 0x08, 0
 char_space db ' ', 0
 
