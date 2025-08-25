@@ -5,14 +5,14 @@ This is a personal project to learn the fundamental concepts of Operating System
 ## Objectives
 
 The main goal is to create tools to use the os:
-- Boot in 16-bit real mode.
-- Display text on the screen.
-- Read input from the keyboard.
+- [x] Boot in 16-bit real mode.
+- [x] Display text on the screen.
+- [x] Read input from the keyboard.
 - (Future goals) 
-    - Create a shell, for a custom terminal
-    - Create a text editor
-    - Create a executable format for files created by the user
-
+    - [x] Create a shell, for a custom terminal
+    - [ ] Create a executable format for files created by the user
+    - [ ] Create a text editor
+    
 ## How to Build and Run
 
 ### Prerequisites
