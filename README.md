@@ -62,9 +62,9 @@ qemu-system-i386 -fda disk.img -display sdl
 
 ```
 .
-├── boot.s             # Bootloader code
-├── kernel.s           # Kernel code
-├── shell.s            # Shell code
+├── boot.s            # Bootloader code
+├── kernel.s          # Kernel code
+├── shell.s           # Shell code
 ├── Build.sh          # File to automate the build
 └── README.md         # This file
 ```
