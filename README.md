@@ -2,6 +2,13 @@
 
 This is a personal project to learn the fundamental concepts of Operating System development, starting from 16-bit real mode.
 
+## Current Status
+
+The project is curently in development, specifically, the File System is the current focus, but there is already some funcionalities as:
+- Simple terminal(shell) with help and clear commands;
+- Kernel that stores the name provided and hadles system calls (syscalls);
+- Bootloader that sends the kernel and the shell to the memory.
+
 ## Objectives
 
 The main goal is to create tools to use the os:
