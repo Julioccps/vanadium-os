@@ -1,6 +1,6 @@
 # TODO LIST
 ## this file is just to list, everything that needs to be done on the project, for organizing purpose
-- [ ] Start the documentation of the project.
+- [x] Start the documentation of the project.
 - [ ] Finish FIle System,
 - [ ] Make the OS able to store changes done and acess it.
 - [ ] Create the executable arquitecture.
